@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { csrfProtection } from '../middleware/csrf.js';
 import { requireAuth } from '../middleware/auth.js';
 import {
   getAllBookings,
@@ -13,8 +14,8 @@ const router = Router();
 // Reading is public; writing requires a logged-in user.
 router.get('/', getAllBookings);
 router.get('/:id', getBooking);
-router.post('/', requireAuth, createBooking);
-router.patch('/:id', requireAuth, updateBooking);
-router.delete('/:id', requireAuth, deleteBooking);
+router.post('/', requireAuth, csrfProtection, createBooking);
+router.patch('/:id', requireAuth, csrfProtection, updateBooking);
+router.delete('/:id', requireAuth, csrfProtection, deleteBooking);
 
 export default router;
