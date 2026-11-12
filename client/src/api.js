@@ -8,3 +8,15 @@ export const api = axios.create({
   baseURL: 'http://localhost:4000/api',
   withCredentials: true
 })
+
+api.interceptors.request.use(async config => {
+  const method = (config.method || 'get').toLowerCase()
+  const safe = ['get', 'head', 'options'].includes(method)
+  const preAuth = ['/auth/login', '/auth/register'].includes(config.url)
+  if (!safe && !preAuth) {
+    const { data } = await api.get('/csrf-token')
+    config.headers = axios.AxiosHeaders.from(config.headers)
+    config.headers.set('x-csrf-token', data.csrfToken)
+  }
+  return config
+})
